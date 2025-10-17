@@ -5,6 +5,7 @@ import setupSwagger from "./config/swagger";
 import corsOptions from "./config/cors";
 import { useExpressServer } from "routing-controllers";
 import { RecipeController } from "./api/v1/controllers/recipeController";
+import { RecipeTypeController } from "./api/v1/controllers/recipeTypeController";
 
 const app: Express = express();
 
@@ -14,7 +15,7 @@ app.use(morgan("combined"));
 
 useExpressServer(app, {
   routePrefix: "/api/v1",
-  controllers: [RecipeController],
+  controllers: [RecipeController, RecipeTypeController],
   cors: corsOptions,
   defaultErrorHandler: false,
 });

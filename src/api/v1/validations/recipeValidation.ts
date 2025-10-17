@@ -1,30 +1,5 @@
-import Joi, { BooleanSchema, NumberSchema, StringSchema } from "joi";
-
-const requiredString = (fieldName: string): StringSchema => {
-  return Joi.string()
-    .required()
-    .messages({
-      "any.required": `${fieldName} is required`,
-      "string.empty": `${fieldName} cannot be empty`,
-    });
-};
-
-const requiredNumber = (fieldName: string): NumberSchema => {
-  return Joi.number()
-    .required()
-    .messages({
-      "any.required": `${fieldName} is required`,
-      "number.base": `${fieldName} must be a number`,
-    });
-};
-
-const requiredBoolean = (fieldName: string): BooleanSchema => {
-  return Joi.boolean()
-    .required()
-    .messages({
-      "any.required": `${fieldName} is required`,
-    });
-};
+import Joi from "joi";
+import { requiredArray, requiredBoolean, requiredNumber, requiredString } from "./validationHelper";
 
 export const recipeSchema = Joi.object({
   id: Joi.string().optional(),
@@ -36,22 +11,6 @@ export const recipeSchema = Joi.object({
   type: requiredString("RecipeType"),
   recipeSaved: requiredBoolean("RecipeSaved"),
   ovenTemp: Joi.number().optional(),
+  ingredients: requiredArray("ingredients"),
+  steps: requiredArray("steps"),
 });
-
-// export interface Recipe {
-//   id: string;
-//   name: string;
-//   description: string;
-//   type: RecipeType;
-
-//   ingredients: string[];
-//   steps: string[];
-
-//   servings: number;
-//   prepTime: number; // mins
-//   cookTime: number; // mins
-//   recipeSaved: boolean;
-//   ovenTemp?: number;
-
-//   image: string;
-// }
