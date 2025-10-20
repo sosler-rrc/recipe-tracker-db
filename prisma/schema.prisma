@@ -29,14 +29,14 @@ model RecipeIngredient {
   id             String @id @default(uuid())
   description    String
   recipeId       String
-  recipe         Recipe @relation(fields: [recipeId], references: [id])
+  recipe         Recipe @relation(fields: [recipeId], references: [id], onDelete: Cascade)
 }
 
 model RecipeStep {
   id             String @id @default(uuid())
   description    String
   recipeId       String
-  recipe         Recipe @relation(fields: [recipeId], references: [id])
+  recipe         Recipe @relation(fields: [recipeId], references: [id], onDelete: Cascade)
 }
 
 
