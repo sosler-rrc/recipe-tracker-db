@@ -1,8 +1,8 @@
-export interface Recipe {
-  id: string;
+export interface RecipeDto {
+  id?: string;
   name: string;
   description: string;
-  type: string;
+  recipeTypeId: string;
 
   ingredients: string[];
   steps: string[];
@@ -10,8 +10,6 @@ export interface Recipe {
   servings: number;
   prepTime: number;
   cookTime: number;
-  recipeSaved: boolean;
+  saved: boolean;
   ovenTemp?: number;
-
-  image: string;
 }

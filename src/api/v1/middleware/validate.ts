@@ -3,7 +3,7 @@ import { ObjectSchema } from "joi";
 
 import { MiddlewareFunction, RequestData } from "../types/express";
 
-// validate method provided by Joi package=
+// validate method provided by Joi package
 export const validate = <T>(schema: ObjectSchema<T>, data: T): void => {
   const { error } = schema.validate(data, { abortEarly: false });
 

@@ -20,7 +20,7 @@ export class RecipeTypeController {
 
   @Post("/recipeTypes/create")
   @UseBefore(validateRequest(recipeTypeSchema))
-  async createRecipe(@Req() req: Request, @Res() res: Response) {
+  async createRecipeType(@Req() req: Request, @Res() res: Response) {
     try {
       const newRecipe = await RecipeTypeService.createRecipeType(req.body);
       res.status(201).json(successResponse(newRecipe, "RecipeType created succesfully"));
@@ -31,7 +31,7 @@ export class RecipeTypeController {
 
   @Put("/recipeTypes/update/:id")
   @UseBefore(validateRequest(recipeTypeSchema))
-  async updateRecipe(@Param("id") id: string, @Req() req: Request, @Res() res: Response) {
+  async updateRecipeType(@Param("id") id: string, @Req() req: Request, @Res() res: Response) {
     try {
       const updatedRecipe = await RecipeTypeService.updateRecipeType(id, req.body);
       res.status(201).json(successResponse(updatedRecipe, "RecipeType updated succesfully"));
@@ -41,7 +41,7 @@ export class RecipeTypeController {
   }
 
   @Delete("/recipeTypes/delete/:id")
-  async deleteRecipe(@Param("id") id: string, @Req() req: Request, @Res() res: Response) {
+  async deleteRecipeType(@Param("id") id: string, @Req() req: Request, @Res() res: Response) {
     try {
       await RecipeTypeService.deleteRecipeType(id);
       res.status(200).json(successResponse(null, "RecipeType deleted succesfully"));

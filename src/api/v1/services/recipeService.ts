@@ -1,48 +1,117 @@
 import prisma from "../../../../prisma/client";
-import { Recipe } from "../../../../prisma/generated/prisma";
+import { RecipeDto } from "../types/newRecipeDto";
 
-export const fetchAllRecipes = async (): Promise<Recipe[]> => {
-  return prisma.recipe.findMany();
+export const fetchAllRecipes = async (): Promise<RecipeDto[]> => {
+  const data = await prisma.recipe.findMany({
+    include: {
+      ingredients: true,
+      steps: true,
+    },
+  });
+
+  return data.map(
+    (x) =>
+      ({
+        ...x,
+        steps: x.steps.map((x) => x.description),
+        ingredients: x.ingredients.map((x) => x.description),
+      } as RecipeDto)
+  );
 };
 
-export const getRecipeById = async (id: string): Promise<Recipe | null> => {
+export const getRecipeById = async (id: string): Promise<RecipeDto | null> => {
   try {
-    const Recipe = prisma.recipe.findUnique({
+    const data = await prisma.recipe.findUnique({
       where: {
         id: id,
       },
+      include: {
+        ingredients: true,
+        steps: true,
+      },
     });
 
-    if (!Recipe) {
+    if (!data) {
       return null;
     } else {
-      return Recipe;
+      const formattedData = {
+        ...data,
+        steps: data.steps.map((x) => x.description),
+        ingredients: data.ingredients.map((x) => x.description),
+      } as RecipeDto;
+
+      return formattedData;
     }
   } catch (error) {
     throw new Error(`Failed to fetch Recipe with id ${id}`);
   }
 };
 
-export const createRecipe = async (RecipeData: Recipe): Promise<Recipe> => {
-  const newRecipe: Recipe = await prisma.recipe.create({
+export const createRecipe = async (recipeDto: RecipeDto): Promise<RecipeDto> => {
+  const { ingredients, steps, ...recipeData } = recipeDto;
+
+  const data = await prisma.recipe.create({
     data: {
-      ...RecipeData,
+      ...recipeData,
+      ingredients: {
+        createMany: {
+          data: ingredients.map((description) => ({ description })),
+        },
+      },
+      steps: {
+        createMany: {
+          data: steps.map((description) => ({ description })),
+        },
+      },
+    },
+    include: {
+      ingredients: true,
+      steps: true,
     },
   });
 
-  return newRecipe;
+  const formattedData = {
+    ...data,
+    steps: data.steps.map((x) => x.description),
+    ingredients: data.ingredients.map((x) => x.description),
+  } as RecipeDto;
+
+  return formattedData;
 };
 
-export const updateRecipe = async (id: string, recipe: Recipe): Promise<Recipe> => {
-  const updateRecipe = await prisma.recipe.update({
-    where: {
-      id: id,
-    },
+export const updateRecipe = async (id: string, recipeDto: RecipeDto): Promise<RecipeDto> => {
+  const { ingredients, steps, ...recipeData } = recipeDto;
+
+  const data = await prisma.recipe.update({
+    where: { id },
     data: {
-      ...recipe,
+      ...recipeData,
+      ingredients: {
+        deleteMany: {},
+        createMany: {
+          data: ingredients.map((x) => ({ description: x })),
+        },
+      },
+      steps: {
+        deleteMany: {},
+        createMany: {
+          data: steps.map((x) => ({ description: x })),
+        },
+      },
+    },
+    include: {
+      ingredients: true,
+      steps: true,
     },
   });
-  return updateRecipe;
+
+  const formattedData = {
+    ...data,
+    steps: data.steps.map((x) => x.description),
+    ingredients: data.ingredients.map((x) => x.description),
+  } as RecipeDto;
+
+  return formattedData;
 };
 
 export const deleteRecipe = async (id: string): Promise<void> => {
