@@ -1,5 +1,5 @@
 import prisma from "../../../../prisma/client";
-import { RecipeDto } from "../types/newRecipeDto";
+import { RecipeDto } from "../types/recipeDto";
 
 export const fetchAllRecipes = async (): Promise<RecipeDto[]> => {
   const data = await prisma.recipe.findMany({
@@ -48,7 +48,7 @@ export const getRecipeById = async (id: string): Promise<RecipeDto | null> => {
 };
 
 export const createRecipe = async (recipeDto: RecipeDto): Promise<RecipeDto> => {
-  const { ingredients, steps, ...recipeData } = recipeDto;
+  const { ingredients, steps, updatedAt, createdAt, ...recipeData } = recipeDto;
 
   const data = await prisma.recipe.create({
     data: {
@@ -80,7 +80,7 @@ export const createRecipe = async (recipeDto: RecipeDto): Promise<RecipeDto> => 
 };
 
 export const updateRecipe = async (id: string, recipeDto: RecipeDto): Promise<RecipeDto> => {
-  const { ingredients, steps, ...recipeData } = recipeDto;
+  const { ingredients, steps, updatedAt, createdAt, ...recipeData } = recipeDto;
 
   const data = await prisma.recipe.update({
     where: { id },

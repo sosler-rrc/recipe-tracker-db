@@ -13,4 +13,4 @@ export const recipeSchema = Joi.object({
   ovenTemp: Joi.number().allow(null).optional(),
   ingredients: requiredArray("ingredients"),
   steps: requiredArray("steps"),
-});
+}).options({ allowUnknown: true });
