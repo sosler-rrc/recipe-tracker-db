@@ -19,6 +19,21 @@ export class RecipeController {
       throw error;
     }
   }
+  @Get("/user-recipes")
+  async getAllUserRecipes(@Req() req: Request, @Res() res: Response) {
+    try {
+      const auth = getAuth(req);
+      const userId = auth.userId;
+      if (!userId) {
+        res.status(403).json(errorResponse("Cannot fetch user recipes, userId is not set"));
+      } else {
+        const recipes = await RecipeService.fetchAllUserRecipes(userId);
+        return res.status(200).json(successResponse(recipes, "Recipes retrieved successfully"));
+      }
+    } catch (error) {
+      throw error;
+    }
+  }
   @Get("/recipes/:id")
   async getById(@Param("id") id: string, @Req() req: Request, @Res() res: Response) {
     try {
@@ -37,7 +52,9 @@ export class RecipeController {
   @UseBefore(validateRequest(recipeSchema))
   async createRecipe(@Req() req: Request, @Res() res: Response) {
     try {
-      const newRecipe = await RecipeService.createRecipe(req.body);
+      const auth = getAuth(req);
+      const userId = auth.userId ?? "";
+      const newRecipe = await RecipeService.createRecipe(req.body, userId);
       res.status(201).json(successResponse(newRecipe, "Recipe created succesfully"));
     } catch (error) {
       throw error;
@@ -48,8 +65,14 @@ export class RecipeController {
   @UseBefore(validateRequest(recipeSchema))
   async updateRecipe(@Param("id") id: string, @Req() req: Request, @Res() res: Response) {
     try {
-      const updatedRecipe = await RecipeService.updateRecipe(id, req.body);
-      res.status(201).json(successResponse(updatedRecipe, "Recipe updated succesfully"));
+      const auth = getAuth(req);
+      const userId = auth.userId;
+      if (userId != req.body.userid) {
+        res.status(403).json(errorResponse("Cannot update recipe, userId does not match"));
+      } else {
+        const updatedRecipe = await RecipeService.updateRecipe(id, req.body);
+        res.status(201).json(successResponse(updatedRecipe, "Recipe updated succesfully"));
+      }
     } catch (error) {
       throw error;
     }
@@ -58,8 +81,14 @@ export class RecipeController {
   @Delete("/recipes/delete/:id")
   async deleteRecipe(@Param("id") id: string, @Req() req: Request, @Res() res: Response) {
     try {
-      await RecipeService.deleteRecipe(id);
-      res.status(200).json(successResponse(null, "Recipe deleted succesfully"));
+      const auth = getAuth(req);
+      const userId = auth.userId;
+      if (userId != req.body.userid) {
+        res.status(403).json(errorResponse("Cannot delete recipe, userId does not match"));
+      } else {
+        await RecipeService.deleteRecipe(id);
+        res.status(200).json(successResponse(null, "Recipe deleted succesfully"));
+      }
     } catch (error) {
       throw error;
     }

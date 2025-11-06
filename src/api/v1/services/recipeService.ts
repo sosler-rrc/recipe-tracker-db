@@ -19,6 +19,27 @@ export const fetchAllRecipes = async (): Promise<RecipeDto[]> => {
   );
 };
 
+export const fetchAllUserRecipes = async (userId: string): Promise<RecipeDto[]> => {
+  const data = await prisma.recipe.findMany({
+    where: {
+      userId: userId,
+    },
+    include: {
+      ingredients: true,
+      steps: true,
+    },
+  });
+
+  return data.map(
+    (x) =>
+      ({
+        ...x,
+        steps: x.steps.map((x) => x.description),
+        ingredients: x.ingredients.map((x) => x.description),
+      } as RecipeDto)
+  );
+};
+
 export const getRecipeById = async (id: string): Promise<RecipeDto | null> => {
   try {
     const data = await prisma.recipe.findUnique({
@@ -47,12 +68,13 @@ export const getRecipeById = async (id: string): Promise<RecipeDto | null> => {
   }
 };
 
-export const createRecipe = async (recipeDto: RecipeDto): Promise<RecipeDto> => {
-  const { ingredients, steps, updatedAt, createdAt, ...recipeData } = recipeDto;
+export const createRecipe = async (recipeDto: RecipeDto, user: string): Promise<RecipeDto> => {
+  const { ingredients, steps, updatedAt, createdAt, userId, ...recipeData } = recipeDto;
 
   const data = await prisma.recipe.create({
     data: {
       ...recipeData,
+      userId: user,
       ingredients: {
         createMany: {
           data: ingredients.map((description) => ({ description })),

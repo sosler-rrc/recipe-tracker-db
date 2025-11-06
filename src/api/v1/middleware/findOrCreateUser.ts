@@ -14,10 +14,6 @@ export const findOrCreateUser = async (req: Request, _res: Response, next: NextF
         backendUser = await userService.createUser({ id: userId });
       }
     }
-
-    // If userId not found with auth, set userId to null
-    // Prevents userId from being included erroneously in the request body
-    // req.params.userId = userId;
     next();
   } catch (error) {
     next(error);

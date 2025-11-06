@@ -14,4 +14,5 @@ export interface RecipeDto {
   ovenTemp?: number;
   updatedAt: Date;
   createdAt: Date;
+  userId: string;
 }
