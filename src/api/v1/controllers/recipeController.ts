@@ -5,8 +5,10 @@ import { errorResponse, successResponse } from "../models/responseModel";
 import { Controller, Delete, Get, Param, Post, Put, Req, Res, UseBefore } from "routing-controllers";
 import { recipeSchema } from "../validations/recipeValidation";
 import { validateRequest } from "../middleware/validate";
+import { getAuth, requireAuth } from "@clerk/express";
 
 @Controller()
+@UseBefore(requireAuth())
 export class RecipeController {
   @Get("/recipes")
   async getAll(@Req() req: Request, @Res() res: Response) {

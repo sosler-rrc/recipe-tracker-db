@@ -8,6 +8,19 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model User {
+  id             String @id
+  userRecipes    UserRecipes[]
+}
+
+model UserRecipes {
+  id             String @id @default(uuid())
+  recipe         Recipe @relation(fields:[recipeId], references: [id], onDelete: Cascade)
+  recipeId       String
+  user           User @relation(fields:[userId], references: [id], onDelete: Cascade)
+  userId         String
+}
+
 model Recipe {
   id             String @id @default(uuid())
   name           String
@@ -25,6 +38,7 @@ model Recipe {
 
   ingredients    RecipeIngredient[]
   steps          RecipeStep[]
+  userRecipes    UserRecipes[]
 }
 
 model RecipeIngredient {
@@ -54,4 +68,3 @@ model RecipeType {
   createdAt      DateTime @default(now())
   recipes        Recipe[]
 }
-
