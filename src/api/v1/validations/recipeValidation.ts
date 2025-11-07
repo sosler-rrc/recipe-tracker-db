@@ -9,8 +9,7 @@ export const recipeSchema = Joi.object({
   prepTime: requiredNumber("PrepTime"),
   cookTime: requiredNumber("CookTime"),
   recipeTypeId: requiredString("recipeTypeId"),
-  saved: requiredBoolean("saved"),
   ovenTemp: Joi.number().allow(null).optional(),
   ingredients: requiredArray("ingredients"),
   steps: requiredArray("steps"),
-}).options({ allowUnknown: true });
+});

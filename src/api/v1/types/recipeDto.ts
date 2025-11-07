@@ -10,7 +10,6 @@ export interface RecipeDto {
   servings: number;
   prepTime: number;
   cookTime: number;
-  saved: boolean;
   ovenTemp?: number;
   updatedAt: Date;
   createdAt: Date;

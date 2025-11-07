@@ -5,7 +5,6 @@ import { successResponse } from "../models/responseModel";
 import { Controller, Delete, Get, Param, Post, Put, Req, Res, UseBefore } from "routing-controllers";
 import { validateRequest } from "../middleware/validate";
 import { recipeTypeSchema } from "../validations/recipeTypeValidation";
-import { requireAuth } from "@clerk/express";
 
 @Controller()
 export class RecipeTypeController {

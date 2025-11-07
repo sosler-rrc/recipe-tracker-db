@@ -6,6 +6,7 @@ export const fetchAllRecipes = async (): Promise<RecipeDto[]> => {
     include: {
       ingredients: true,
       steps: true,
+      user: true,
     },
   });
 
@@ -19,25 +20,20 @@ export const fetchAllRecipes = async (): Promise<RecipeDto[]> => {
   );
 };
 
-export const fetchAllUserRecipes = async (userId: string): Promise<RecipeDto[]> => {
-  const data = await prisma.recipe.findMany({
+export const fetchUserSavedRecipeIds = async (userId: string): Promise<string[]> => {
+  const userSavedRecipes = await prisma.userSavedRecipes.findMany({
     where: {
       userId: userId,
     },
-    include: {
-      ingredients: true,
-      steps: true,
+  });
+
+  const data = await prisma.recipe.findMany({
+    where: {
+      id: { in: userSavedRecipes.map((x) => x.recipeId) },
     },
   });
 
-  return data.map(
-    (x) =>
-      ({
-        ...x,
-        steps: x.steps.map((x) => x.description),
-        ingredients: x.ingredients.map((x) => x.description),
-      } as RecipeDto)
-  );
+  return data.map((x) => x.id);
 };
 
 export const getRecipeById = async (id: string): Promise<RecipeDto | null> => {
@@ -49,6 +45,7 @@ export const getRecipeById = async (id: string): Promise<RecipeDto | null> => {
       include: {
         ingredients: true,
         steps: true,
+        user: true,
       },
     });
 
@@ -65,6 +62,30 @@ export const getRecipeById = async (id: string): Promise<RecipeDto | null> => {
     }
   } catch (error) {
     throw new Error(`Failed to fetch Recipe with id ${id}`);
+  }
+};
+
+export const toggleUserSavedRecipe = async (recipeId: string, userId: string): Promise<void> => {
+  const existingRecord = await prisma.userSavedRecipes.findFirst({
+    where: {
+      recipeId: recipeId,
+      userId: userId,
+    },
+  });
+
+  if (existingRecord) {
+    await prisma.userSavedRecipes.delete({
+      where: {
+        id: existingRecord.id,
+      },
+    });
+  } else {
+    await prisma.userSavedRecipes.create({
+      data: {
+        recipeId,
+        userId,
+      },
+    });
   }
 };
 
@@ -89,6 +110,7 @@ export const createRecipe = async (recipeDto: RecipeDto, user: string): Promise<
     include: {
       ingredients: true,
       steps: true,
+      user: true,
     },
   });
 
@@ -124,6 +146,7 @@ export const updateRecipe = async (id: string, recipeDto: RecipeDto): Promise<Re
     include: {
       ingredients: true,
       steps: true,
+      user: true,
     },
   });
 

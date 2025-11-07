@@ -1,8 +1,12 @@
-import { User } from "prisma/generated/prisma";
 import prisma from "../../../../prisma/client";
 
-export const getUserById = async (id: string): Promise<User | null> => {
-  const user: User | null = await prisma.user.findUnique({
+export const getUsers = async () => {
+  const users = await prisma.user.findMany();
+  return users;
+};
+
+export const getUserById = async (id: string) => {
+  const user = await prisma.user.findUnique({
     where: {
       id: id,
     },
@@ -15,10 +19,11 @@ export const getUserById = async (id: string): Promise<User | null> => {
   }
 };
 
-export const createUser = async (userData: { id: string }): Promise<User> => {
+export const createUser = async (id: string, username: string) => {
   const newUser = await prisma.user.create({
     data: {
-      ...userData,
+      id,
+      username,
     },
   });
 
