@@ -11,11 +11,12 @@ datasource db {
 model User {
   id                  String @id
   username            String
-  userSavedRecipes    UserSavedRecipes[]
+  userSavedRecipes    UserSavedRecipe[]
   userRecipes         Recipe[]
+  comments            RecipeComment[]
 }
 
-model UserSavedRecipes {
+model UserSavedRecipe {
   id             String @id @default(uuid())
   recipe         Recipe @relation(fields:[recipeId], references: [id], onDelete: Cascade)
   recipeId       String
@@ -42,7 +43,8 @@ model Recipe {
   
   ingredients         RecipeIngredient[]
   steps               RecipeStep[]
-  userSavedRecipes    UserSavedRecipes[]
+  userSavedRecipes    UserSavedRecipe[]
+  comments            RecipeComment[]
 }
 
 model RecipeIngredient {
@@ -61,6 +63,16 @@ model RecipeStep {
   createdAt      DateTime @default(now())
   recipeId       String
   recipe         Recipe @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+}
+
+model RecipeComment {
+  id            String @id @default(uuid())
+  text          String
+  createdAt     DateTime @default(now())
+  userId        String
+  user          User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  recipeId      String
+  recipe        Recipe @relation(fields: [recipeId], references: [id], onDelete: Cascade)
 }
 
 

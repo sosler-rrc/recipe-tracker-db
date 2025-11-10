@@ -8,6 +8,7 @@ import { validateRequest } from "../middleware/validate";
 import { getAuth, requireAuth } from "@clerk/express";
 import * as UserService from "../services/userService";
 import { findOrCreateUser } from "../middleware/findOrCreateUser";
+import { recipeCommentSchema } from "../validations/recipeCommentValidation";
 
 @Controller()
 export class RecipeController {
@@ -70,9 +71,8 @@ export class RecipeController {
     }
   }
 
-  @Post("/recipes/create")
+  @Post("/recipes")
   @UseBefore(findOrCreateUser, requireAuth(), validateRequest(recipeSchema))
-  @UseBefore()
   async createRecipe(@Req() req: Request, @Res() res: Response) {
     try {
       const auth = getAuth(req);
@@ -89,7 +89,7 @@ export class RecipeController {
     }
   }
 
-  @Put("/recipes/update/:id")
+  @Put("/recipes/:id")
   @UseBefore(findOrCreateUser, requireAuth(), validateRequest(recipeSchema))
   async updateRecipe(@Param("id") id: string, @Req() req: Request, @Res() res: Response) {
     try {
@@ -107,7 +107,7 @@ export class RecipeController {
     }
   }
 
-  @Delete("/recipes/delete/:id")
+  @Delete("/recipes/:id")
   @UseBefore(findOrCreateUser, requireAuth())
   async deleteRecipe(@Param("id") id: string, @Req() req: Request, @Res() res: Response) {
     try {
@@ -119,6 +119,42 @@ export class RecipeController {
       } else {
         await RecipeService.deleteRecipe(id);
         res.status(200).json(successResponse(null, "Recipe deleted succesfully"));
+      }
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  @Post("/recipe-comment")
+  @UseBefore(findOrCreateUser, requireAuth(), validateRequest(recipeCommentSchema))
+  async createRecipeComment(@Req() req: Request, @Res() res: Response) {
+    try {
+      const auth = getAuth(req);
+      const userId = auth.userId ?? "";
+      const user = await UserService.getUserById(userId);
+      if (user) {
+        await RecipeService.deleteRecipeComment(user.id, req.body.text);
+        const recipe = await RecipeService.getRecipeById(req.body.recipeId);
+        res.status(201).json(successResponse(recipe, "Recipe comment created succesfully"));
+      } else {
+        res.status(403).json(errorResponse("Unauthorized"));
+      }
+    } catch (error) {
+      throw error;
+    }
+  }
+  @Delete("/recipe-comment/:id")
+  @UseBefore(findOrCreateUser, requireAuth())
+  async deleteRecipeComment(@Param("id") id: string, @Req() req: Request, @Res() res: Response) {
+    try {
+      const auth = getAuth(req);
+      const userId = auth.userId ?? "";
+      const user = await UserService.getUserById(userId);
+      if (user) {
+        await RecipeService.deleteRecipeComment(id, user.id);
+        res.status(201).json(successResponse("Recipe comment deleted succesfully"));
+      } else {
+        res.status(403).json(errorResponse("Unauthorized"));
       }
     } catch (error) {
       throw error;

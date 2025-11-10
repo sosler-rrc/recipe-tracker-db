@@ -1,4 +1,5 @@
 import prisma from "../../../../prisma/client";
+import { RecipeCommentDto } from "../types/recipeCommentDto";
 import { RecipeDto } from "../types/recipeDto";
 
 export const fetchAllRecipes = async (): Promise<RecipeDto[]> => {
@@ -7,6 +8,11 @@ export const fetchAllRecipes = async (): Promise<RecipeDto[]> => {
       ingredients: true,
       steps: true,
       user: true,
+      comments: {
+        include: {
+          user: true,
+        },
+      },
     },
   });
 
@@ -16,12 +22,13 @@ export const fetchAllRecipes = async (): Promise<RecipeDto[]> => {
         ...x,
         steps: x.steps.map((x) => x.description),
         ingredients: x.ingredients.map((x) => x.description),
+        comments: x.comments.map((x) => ({ userId: x.userId, text: x.text, createdAt: x.createdAt, username: x.user.username, id: x.id } as RecipeCommentDto)),
       } as RecipeDto)
   );
 };
 
 export const fetchUserSavedRecipeIds = async (userId: string): Promise<string[]> => {
-  const userSavedRecipes = await prisma.userSavedRecipes.findMany({
+  const userSavedRecipes = await prisma.userSavedRecipe.findMany({
     where: {
       userId: userId,
     },
@@ -46,6 +53,11 @@ export const getRecipeById = async (id: string): Promise<RecipeDto | null> => {
         ingredients: true,
         steps: true,
         user: true,
+        comments: {
+          include: {
+            user: true,
+          },
+        },
       },
     });
 
@@ -56,6 +68,9 @@ export const getRecipeById = async (id: string): Promise<RecipeDto | null> => {
         ...data,
         steps: data.steps.map((x) => x.description),
         ingredients: data.ingredients.map((x) => x.description),
+        comments: data.comments.map(
+          (x) => ({ userId: x.userId, text: x.text, createdAt: x.createdAt, username: x.user.username, id: x.id } as RecipeCommentDto)
+        ),
       } as RecipeDto;
 
       return formattedData;
@@ -66,7 +81,7 @@ export const getRecipeById = async (id: string): Promise<RecipeDto | null> => {
 };
 
 export const toggleUserSavedRecipe = async (recipeId: string, userId: string): Promise<void> => {
-  const existingRecord = await prisma.userSavedRecipes.findFirst({
+  const existingRecord = await prisma.userSavedRecipe.findFirst({
     where: {
       recipeId: recipeId,
       userId: userId,
@@ -74,13 +89,13 @@ export const toggleUserSavedRecipe = async (recipeId: string, userId: string): P
   });
 
   if (existingRecord) {
-    await prisma.userSavedRecipes.delete({
+    await prisma.userSavedRecipe.delete({
       where: {
         id: existingRecord.id,
       },
     });
   } else {
-    await prisma.userSavedRecipes.create({
+    await prisma.userSavedRecipe.create({
       data: {
         recipeId,
         userId,
@@ -90,7 +105,7 @@ export const toggleUserSavedRecipe = async (recipeId: string, userId: string): P
 };
 
 export const createRecipe = async (recipeDto: RecipeDto, user: string): Promise<RecipeDto> => {
-  const { ingredients, steps, updatedAt, createdAt, userId, ...recipeData } = recipeDto;
+  const { ingredients, steps, comments, updatedAt, createdAt, userId, ...recipeData } = recipeDto;
 
   const data = await prisma.recipe.create({
     data: {
@@ -111,6 +126,11 @@ export const createRecipe = async (recipeDto: RecipeDto, user: string): Promise<
       ingredients: true,
       steps: true,
       user: true,
+      comments: {
+        include: {
+          user: true,
+        },
+      },
     },
   });
 
@@ -118,13 +138,14 @@ export const createRecipe = async (recipeDto: RecipeDto, user: string): Promise<
     ...data,
     steps: data.steps.map((x) => x.description),
     ingredients: data.ingredients.map((x) => x.description),
+    comments: data.comments.map((x) => ({ userId: x.userId, text: x.text, createdAt: x.createdAt, username: x.user.username, id: x.id } as RecipeCommentDto)),
   } as RecipeDto;
 
   return formattedData;
 };
 
 export const updateRecipe = async (id: string, recipeDto: RecipeDto): Promise<RecipeDto> => {
-  const { ingredients, steps, updatedAt, createdAt, ...recipeData } = recipeDto;
+  const { ingredients, steps, comments, updatedAt, createdAt, ...recipeData } = recipeDto;
 
   const data = await prisma.recipe.update({
     where: { id },
@@ -147,6 +168,11 @@ export const updateRecipe = async (id: string, recipeDto: RecipeDto): Promise<Re
       ingredients: true,
       steps: true,
       user: true,
+      comments: {
+        include: {
+          user: true,
+        },
+      },
     },
   });
 
@@ -154,6 +180,7 @@ export const updateRecipe = async (id: string, recipeDto: RecipeDto): Promise<Re
     ...data,
     steps: data.steps.map((x) => x.description),
     ingredients: data.ingredients.map((x) => x.description),
+    comments: data.comments.map((x) => ({ userId: x.userId, text: x.text, createdAt: x.createdAt, username: x.user.username, id: x.id } as RecipeCommentDto)),
   } as RecipeDto;
 
   return formattedData;
@@ -165,4 +192,29 @@ export const deleteRecipe = async (id: string): Promise<void> => {
       id: id,
     },
   });
+};
+
+export const createRecipeComment = async (userId: string, text: string, recipeId: string): Promise<void> => {
+  await prisma.recipeComment.create({
+    data: {
+      text,
+      userId,
+      recipeId,
+    },
+  });
+};
+export const deleteRecipeComment = async (id: string, userId: string) => {
+  const comment = await prisma.recipeComment.findFirst({
+    where: {
+      id: id,
+      userId: userId,
+    },
+  });
+  if (comment != undefined) {
+    await prisma.recipeComment.delete({
+      where: {
+        id: id,
+      },
+    });
+  }
 };

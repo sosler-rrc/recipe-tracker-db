@@ -19,7 +19,7 @@ main()
 
 async function seedData() {
   // clear tables
-  await prisma.userSavedRecipes.deleteMany();
+  await prisma.userSavedRecipe.deleteMany();
   await prisma.recipeIngredient.deleteMany();
   await prisma.recipeStep.deleteMany();
   await prisma.recipe.deleteMany();
@@ -1277,6 +1277,18 @@ async function seedData() {
           },
           {
             description: "Remove from heat, garnish with chopped green onions, and serve immediately over steamed rice.",
+          },
+        ],
+      },
+      comments: {
+        create: [
+          {
+            userId: users[1].id,
+            text: "Yummy!",
+          },
+          {
+            userId: users[3].id,
+            text: "Tastes Good!",
           },
         ],
       },

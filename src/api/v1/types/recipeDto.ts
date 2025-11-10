@@ -1,3 +1,5 @@
+import { RecipeCommentDto } from "./recipeCommentDto";
+
 export interface RecipeDto {
   id?: string;
   name: string;
@@ -14,4 +16,6 @@ export interface RecipeDto {
   updatedAt: Date;
   createdAt: Date;
   userId: string;
+
+  comments: RecipeCommentDto[];
 }
