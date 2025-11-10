@@ -10,7 +10,6 @@ import * as UserService from "../services/userService";
 import { findOrCreateUser } from "../middleware/findOrCreateUser";
 
 @Controller()
-@UseBefore(findOrCreateUser, requireAuth())
 export class RecipeController {
   @Get("/recipes")
   async getAll(@Req() req: Request, @Res() res: Response) {
@@ -37,6 +36,7 @@ export class RecipeController {
   }
 
   @Get("/user-saved-recipes")
+  @UseBefore(findOrCreateUser, requireAuth())
   async getAllUserSavedRecipes(@Req() req: Request, @Res() res: Response) {
     try {
       const auth = getAuth(req);
@@ -53,6 +53,7 @@ export class RecipeController {
   }
 
   @Post("/user-saved-recipes/:id")
+  @UseBefore(findOrCreateUser, requireAuth())
   async toggleUserSavedRecipe(@Param("id") id: string, @Req() req: Request, @Res() res: Response) {
     try {
       const auth = getAuth(req);
@@ -70,7 +71,8 @@ export class RecipeController {
   }
 
   @Post("/recipes/create")
-  @UseBefore(validateRequest(recipeSchema))
+  @UseBefore(findOrCreateUser, requireAuth(), validateRequest(recipeSchema))
+  @UseBefore()
   async createRecipe(@Req() req: Request, @Res() res: Response) {
     try {
       const auth = getAuth(req);
@@ -88,7 +90,7 @@ export class RecipeController {
   }
 
   @Put("/recipes/update/:id")
-  @UseBefore(validateRequest(recipeSchema))
+  @UseBefore(findOrCreateUser, requireAuth(), validateRequest(recipeSchema))
   async updateRecipe(@Param("id") id: string, @Req() req: Request, @Res() res: Response) {
     try {
       const auth = getAuth(req);
@@ -106,6 +108,7 @@ export class RecipeController {
   }
 
   @Delete("/recipes/delete/:id")
+  @UseBefore(findOrCreateUser, requireAuth())
   async deleteRecipe(@Param("id") id: string, @Req() req: Request, @Res() res: Response) {
     try {
       const auth = getAuth(req);
