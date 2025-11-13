@@ -1,8 +1,10 @@
 import prisma from "../../../../prisma/client";
 import { RecipeCommentDto } from "../types/recipeCommentDto";
 import { RecipeDto } from "../types/recipeDto";
+import { formatRecipe } from "../utils/formatRecipe";
 
 export const fetchAllRecipes = async (): Promise<RecipeDto[]> => {
+  //Using include will also return the associated tables (RecipeSteps, RecipeIngreidents) when returning the recipe data
   const data = await prisma.recipe.findMany({
     include: {
       ingredients: true,
@@ -45,6 +47,7 @@ export const fetchUserSavedRecipeIds = async (userId: string): Promise<string[]>
 
 export const getRecipeById = async (id: string): Promise<RecipeDto | null> => {
   try {
+    //Find the recipe using the id passed in and return the entire object included  with RecipeSteps & RecipeIngredients
     const data = await prisma.recipe.findUnique({
       where: {
         id: id,
@@ -147,6 +150,7 @@ export const createRecipe = async (recipeDto: RecipeDto, user: string): Promise<
 export const updateRecipe = async (id: string, recipeDto: RecipeDto): Promise<RecipeDto> => {
   const { ingredients, steps, comments, updatedAt, createdAt, ...recipeData } = recipeDto;
 
+  //During an recipe update we clear out the associated entries in the RecipeIngredients & RecipeSteps tables using deleteMany: {} and re-add the entries using createMany
   const data = await prisma.recipe.update({
     where: { id },
     data: {
