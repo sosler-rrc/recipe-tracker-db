@@ -133,7 +133,7 @@ export class RecipeController {
       const userId = auth.userId ?? "";
       const user = await UserService.getUserById(userId);
       if (user) {
-        await RecipeService.deleteRecipeComment(user.id, req.body.text);
+        await RecipeService.createRecipeComment(user.id, req.body.text, req.body.recipeId);
         const recipe = await RecipeService.getRecipeById(req.body.recipeId);
         res.status(201).json(successResponse(recipe, "Recipe comment created succesfully"));
       } else {
