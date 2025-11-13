@@ -19,8 +19,50 @@ main()
 
 async function seedData() {
   // clear tables
+  await prisma.userSavedRecipe.deleteMany();
+  await prisma.recipeIngredient.deleteMany();
+  await prisma.recipeStep.deleteMany();
   await prisma.recipe.deleteMany();
   await prisma.recipeType.deleteMany();
+  await prisma.user.deleteMany();
+
+  // Create 5 fake users
+  const users = await Promise.all([
+    prisma.user.create({
+      data: {
+        id: "user_1",
+        username: "chef_mario",
+      },
+    }),
+    prisma.user.create({
+      data: {
+        id: "user_2",
+        username: "baker_emma",
+      },
+    }),
+    prisma.user.create({
+      data: {
+        id: "user_3",
+        username: "foodie_alex",
+      },
+    }),
+    prisma.user.create({
+      data: {
+        id: "user_4",
+        username: "cook_sarah",
+      },
+    }),
+    prisma.user.create({
+      data: {
+        id: "user_5",
+        username: "grill_master_jake",
+      },
+    }),
+  ]);
+  console.log("Created 5 users");
+
+  // Helper function to get random user
+  const getRandomUser = () => users[Math.floor(Math.random() * users.length)];
 
   // Create recipe types
   const breakfast = await prisma.recipeType.create({
@@ -29,38 +71,33 @@ async function seedData() {
       description: "Morning meals and brunch dishes",
     },
   });
-
   const lunch = await prisma.recipeType.create({
     data: {
       name: "Lunch",
       description: "Midday meals and light dishes",
     },
   });
-
   const dinner = await prisma.recipeType.create({
     data: {
       name: "Dinner",
       description: "Evening meals and main courses",
     },
   });
-
   const dessert = await prisma.recipeType.create({
     data: {
       name: "Dessert",
       description: "Sweet treats and after-dinner delights",
     },
   });
-
   const beverage = await prisma.recipeType.create({
     data: {
       name: "Beverage",
       description: "Drinks and refreshments",
     },
   });
-
   console.log("Created recipe types");
 
-  // Create recipes with nested ingredients and steps
+  // Create recipes with nested ingredients and steps, assigned to random users
   await prisma.recipe.create({
     data: {
       name: "Chocolate Chip Cookies",
@@ -70,8 +107,8 @@ async function seedData() {
       prepTime: 15,
       cookTime: 10,
       ovenTemp: 375,
-      saved: false,
       recipeTypeId: dessert.id,
+      userId: getRandomUser().id,
       ingredients: {
         create: [
           { description: "2¼ cups all-purpose flour" },
@@ -130,8 +167,8 @@ async function seedData() {
       prepTime: 10,
       cookTime: 15,
       ovenTemp: null,
-      saved: false,
       recipeTypeId: lunch.id,
+      userId: getRandomUser().id,
       ingredients: {
         create: [
           { description: "2 chicken breasts (6-8oz each)" },
@@ -186,8 +223,8 @@ async function seedData() {
       prepTime: 5,
       cookTime: 15,
       ovenTemp: null,
-      saved: false,
       recipeTypeId: breakfast.id,
+      userId: getRandomUser().id,
       ingredients: {
         create: [
           { description: "2 cups all-purpose flour" },
@@ -198,44 +235,33 @@ async function seedData() {
           { description: "1¾ cups buttermilk" },
           { description: "¼ cup melted butter, slightly cooled" },
           { description: "1 tsp vanilla extract" },
-          { description: "1/3 cup unsweetened cocoa powder" },
-          { description: "1/2 cup all-purpose flour" },
-          { description: "1/4 tsp salt" },
-          { description: "1/4 tsp baking powder" },
-          { description: "1/2 cup chocolate chips" },
         ],
       },
       steps: {
         create: [
           {
-            description: "Preheat oven to 350°F (175°C). Line an 8x8 inch square baking pan with parchment paper, leaving overhang for easy removal.",
+            description: "In a large bowl, whisk together flour, sugar, baking powder, and salt.",
           },
           {
-            description: "In a large bowl, whisk together melted butter and sugar until well combined and slightly glossy.",
+            description: "In a separate bowl, beat eggs then whisk in buttermilk, melted butter, and vanilla extract.",
           },
           {
-            description: "Beat in eggs one at a time, then add vanilla extract, mixing until smooth.",
+            description: "Pour wet ingredients into dry ingredients and stir until just combined. Don't overmix - lumps are okay.",
           },
           {
-            description: "In a separate bowl, sift together cocoa powder, flour, salt, and baking powder to remove any lumps.",
+            description: "Heat a griddle or large skillet over medium heat and lightly grease with butter or cooking spray.",
           },
           {
-            description: "Gradually fold the dry ingredients into the wet ingredients using a rubber spatula, mixing just until combined. Don't overmix.",
+            description: "Pour ¼ cup of batter onto the griddle for each pancake. Cook until bubbles form on surface and edges look dry, about 2-3 minutes.",
           },
           {
-            description: "Fold in chocolate chips, distributing them evenly throughout the batter.",
+            description: "Flip and cook for another 2-3 minutes until golden brown and cooked through.",
           },
           {
-            description: "Pour batter into the prepared pan and spread evenly to the corners with an offset spatula.",
+            description: "Keep finished pancakes warm in a 200°F oven while cooking remaining batter.",
           },
           {
-            description: "Bake for 25-30 minutes, until a toothpick inserted in the center comes out with a few moist crumbs (not completely clean).",
-          },
-          {
-            description: "Cool completely in the pan on a wire rack before lifting out using parchment paper overhang.",
-          },
-          {
-            description: "Cut into squares with a sharp knife, wiping the blade clean between cuts for neat edges.",
+            description: "Serve hot with butter, maple syrup, and fresh berries.",
           },
         ],
       },
@@ -251,8 +277,8 @@ async function seedData() {
       prepTime: 20,
       cookTime: 0,
       ovenTemp: null,
-      saved: false,
       recipeTypeId: lunch.id,
+      userId: getRandomUser().id,
       ingredients: {
         create: [
           { description: "4 large ripe tomatoes, sliced 1/4 inch thick" },
@@ -308,8 +334,8 @@ async function seedData() {
       prepTime: 20,
       cookTime: 90,
       ovenTemp: null,
-      saved: false,
       recipeTypeId: dinner.id,
+      userId: getRandomUser().id,
       ingredients: {
         create: [
           { description: "1 whole chicken (3-4 lbs)" },
@@ -374,8 +400,8 @@ async function seedData() {
       prepTime: 10,
       cookTime: 12,
       ovenTemp: 425,
-      saved: false,
       recipeTypeId: lunch.id,
+      userId: getRandomUser().id,
       ingredients: {
         create: [
           { description: "1 large French bread loaf" },
@@ -432,8 +458,8 @@ async function seedData() {
       prepTime: 15,
       cookTime: 20,
       ovenTemp: null,
-      saved: true,
       recipeTypeId: dinner.id,
+      userId: getRandomUser().id,
       ingredients: {
         create: [
           { description: "1 lb ground beef (80/20)" },
@@ -503,8 +529,8 @@ async function seedData() {
       prepTime: 30,
       cookTime: 55,
       ovenTemp: 425,
-      saved: false,
       recipeTypeId: dessert.id,
+      userId: getRandomUser().id,
       ingredients: {
         create: [
           { description: "2 pie crusts (homemade or store-bought)" },
@@ -571,8 +597,8 @@ async function seedData() {
       prepTime: 20,
       cookTime: 35,
       ovenTemp: null,
-      saved: false,
       recipeTypeId: dinner.id,
+      userId: getRandomUser().id,
       ingredients: {
         create: [
           { description: "2 tbsp olive oil" },
@@ -639,8 +665,8 @@ async function seedData() {
       prepTime: 15,
       cookTime: 5,
       ovenTemp: null,
-      saved: false,
       recipeTypeId: beverage.id,
+      userId: getRandomUser().id,
       ingredients: {
         create: [
           { description: "1 cup fresh lemon juice (about 6-8 lemons)" },
@@ -694,8 +720,8 @@ async function seedData() {
       prepTime: 20,
       cookTime: 65,
       ovenTemp: 350,
-      saved: false,
       recipeTypeId: dinner.id,
+      userId: getRandomUser().id,
       ingredients: {
         create: [
           { description: "2 lbs ground beef (80/20)" },
@@ -761,8 +787,8 @@ async function seedData() {
       prepTime: 5,
       cookTime: 0,
       ovenTemp: null,
-      saved: false,
       recipeTypeId: beverage.id,
+      userId: getRandomUser().id,
       ingredients: {
         create: [
           { description: "1 cup coarsely ground coffee" },
@@ -820,8 +846,8 @@ async function seedData() {
       prepTime: 15,
       cookTime: 45,
       ovenTemp: null,
-      saved: true,
       recipeTypeId: dinner.id,
+      userId: getRandomUser().id,
       ingredients: {
         create: [
           { description: "1 lb ground beef (80/20 blend preferred)" },
@@ -896,8 +922,8 @@ async function seedData() {
       prepTime: 5,
       cookTime: 0,
       ovenTemp: null,
-      saved: false,
       recipeTypeId: beverage.id,
+      userId: getRandomUser().id,
       ingredients: {
         create: [
           { description: "2 cups fresh baby spinach, packed" },
@@ -956,8 +982,8 @@ async function seedData() {
       prepTime: 20,
       cookTime: 60,
       ovenTemp: null,
-      saved: false,
       recipeTypeId: dinner.id,
+      userId: getRandomUser().id,
       ingredients: {
         create: [
           { description: "2 lbs ground beef (80/20 blend)" },
@@ -1022,8 +1048,8 @@ async function seedData() {
       prepTime: 15,
       cookTime: 60,
       ovenTemp: 350,
-      saved: false,
       recipeTypeId: dessert.id,
+      userId: getRandomUser().id,
       ingredients: {
         create: [
           { description: "3 very ripe bananas, mashed" },
@@ -1081,8 +1107,8 @@ async function seedData() {
       prepTime: 15,
       cookTime: 0,
       ovenTemp: null,
-      saved: false,
       recipeTypeId: lunch.id,
+      userId: getRandomUser().id,
       ingredients: {
         create: [
           { description: "4 large tomatoes, cut into wedges" },
@@ -1140,8 +1166,8 @@ async function seedData() {
       prepTime: 10,
       cookTime: 15,
       ovenTemp: null,
-      saved: false,
       recipeTypeId: breakfast.id,
+      userId: getRandomUser().id,
       ingredients: {
         create: [
           { description: "8 thick slices brioche or challah bread" },
@@ -1199,8 +1225,8 @@ async function seedData() {
       prepTime: 15,
       cookTime: 12,
       ovenTemp: null,
-      saved: false,
       recipeTypeId: dinner.id,
+      userId: getRandomUser().id,
       ingredients: {
         create: [
           { description: "1 lb boneless chicken breast, sliced thin" },
@@ -1254,6 +1280,20 @@ async function seedData() {
           },
         ],
       },
+      comments: {
+        create: [
+          {
+            userId: users[1].id,
+            text: "Yummy!",
+          },
+          {
+            userId: users[3].id,
+            text: "Tastes Good!",
+          },
+        ],
+      },
     },
   });
+
+  console.log("Seeded 19 recipes assigned to 5 random users");
 }

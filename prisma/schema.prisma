@@ -8,6 +8,22 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model User {
+  id                  String @id
+  username            String
+  userSavedRecipes    UserSavedRecipe[]
+  userRecipes         Recipe[]
+  comments            RecipeComment[]
+}
+
+model UserSavedRecipe {
+  id             String @id @default(uuid())
+  recipe         Recipe @relation(fields:[recipeId], references: [id], onDelete: Cascade)
+  recipeId       String
+  user           User @relation(fields:[userId], references: [id], onDelete: Cascade)
+  userId         String
+}
+
 model Recipe {
   id             String @id @default(uuid())
   name           String
@@ -16,15 +32,19 @@ model Recipe {
   prepTime       Int
   cookTime       Int
   ovenTemp       Int?
-  saved          Boolean
   updatedAt      DateTime @updatedAt
   createdAt      DateTime @default(now())
   
   recipeTypeId   String
   recipeType     RecipeType @relation(fields: [recipeTypeId], references: [id])
 
-  ingredients    RecipeIngredient[]
-  steps          RecipeStep[]
+  userId         String
+  user           User @relation(fields: [userId], references: [id])
+  
+  ingredients         RecipeIngredient[]
+  steps               RecipeStep[]
+  userSavedRecipes    UserSavedRecipe[]
+  comments            RecipeComment[]
 }
 
 model RecipeIngredient {
@@ -45,6 +65,16 @@ model RecipeStep {
   recipe         Recipe @relation(fields: [recipeId], references: [id], onDelete: Cascade)
 }
 
+model RecipeComment {
+  id            String @id @default(uuid())
+  text          String
+  createdAt     DateTime @default(now())
+  userId        String
+  user          User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  recipeId      String
+  recipe        Recipe @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+}
+
 
 model RecipeType {
   id             String @id @default(uuid())
@@ -54,4 +84,3 @@ model RecipeType {
   createdAt      DateTime @default(now())
   recipes        Recipe[]
 }
-

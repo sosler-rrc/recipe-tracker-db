@@ -1,5 +1,5 @@
 import Joi from "joi";
-import { requiredArray, requiredBoolean, requiredNumber, requiredString } from "./validationHelper";
+import { requiredArray, requiredNumber, requiredString } from "./validationHelper";
 
 export const recipeSchema = Joi.object({
   id: Joi.string().optional(),
@@ -9,8 +9,8 @@ export const recipeSchema = Joi.object({
   prepTime: requiredNumber("PrepTime"),
   cookTime: requiredNumber("CookTime"),
   recipeTypeId: requiredString("recipeTypeId"),
-  saved: requiredBoolean("saved"),
   ovenTemp: Joi.number().allow(null).optional(),
   ingredients: requiredArray("ingredients"),
   steps: requiredArray("steps"),
-}).options({ allowUnknown: true });
+  comments: Joi.array().optional(),
+});
