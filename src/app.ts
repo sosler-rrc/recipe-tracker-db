@@ -6,12 +6,15 @@ import corsOptions from "./config/cors";
 import { useExpressServer } from "routing-controllers";
 import { RecipeController } from "./api/v1/controllers/recipeController";
 import { RecipeTypeController } from "./api/v1/controllers/recipeTypeController";
+import { clerkMiddleware, requireAuth } from "@clerk/express";
 
 const app: Express = express();
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(morgan("combined"));
+
+app.use(clerkMiddleware());
 
 // setup the controllers and use the /api/v1 prefix for the routes
 useExpressServer(app, {
