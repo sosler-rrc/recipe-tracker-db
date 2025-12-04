@@ -1,6 +1,7 @@
-import prisma from "@/prisma/client";
-import { RecipeCommentDto } from "@/api/v1/types/recipeCommentDto";
-import { RecipeDto } from "@/api/v1/types/recipeDto";
+import prisma from "../../../../prisma/client";
+import { RecipeCommentDto } from "../types/recipeCommentDto";
+import { RecipeDto } from "../types/recipeDto";
+import { formatRecipe } from "../utils/formatRecipe";
 
 export const fetchAllRecipes = async (): Promise<RecipeDto[]> => {
   //Using include will also return the associated tables (RecipeSteps, RecipeIngreidents) when returning the recipe data

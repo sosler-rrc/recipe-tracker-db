@@ -1,5 +1,5 @@
-import prisma from "@/prisma/client";
-import { RecipeType } from "@/prisma/generated/prisma";
+import prisma from "../../../../prisma/client";
+import { RecipeType } from "../../../../prisma/generated/prisma";
 
 export const fetchAllRecipeTypes = async (): Promise<RecipeType[]> => {
   return prisma.recipeType.findMany();

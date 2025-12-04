@@ -1,4 +1,4 @@
-import * as userService from "@/api/v1/services/userService";
+import * as userService from "../services/userService";
 import { Request, Response, NextFunction } from "express";
 import { clerkClient, getAuth } from "@clerk/express";
 
