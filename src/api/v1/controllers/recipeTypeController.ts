@@ -1,10 +1,10 @@
 import "reflect-metadata";
 import { Request, Response } from "express";
+import * as RecipeTypeService from "../services/recipeTypeService";
+import { successResponse } from "../models/responseModel";
 import { Controller, Delete, Get, Param, Post, Put, Req, Res, UseBefore } from "routing-controllers";
-import * as RecipeTypeService from "@/api/v1/services/recipeTypeService";
-import { successResponse } from "@/api/v1/models/responseModel";
-import { validateRequest } from "@/api/v1/middleware/validate";
-import { recipeTypeSchema } from "@/api/v1/validations/recipeTypeValidation";
+import { validateRequest } from "../middleware/validate";
+import { recipeTypeSchema } from "../validations/recipeTypeValidation";
 
 @Controller()
 export class RecipeTypeController {

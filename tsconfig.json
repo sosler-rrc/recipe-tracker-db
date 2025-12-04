@@ -12,11 +12,7 @@
     "resolveJsonModule": true,
     "moduleResolution": "node",
     "emitDecoratorMetadata": true,
-    "experimentalDecorators": true,
-    "paths": {
-      "@/*": ["./src/*"],
-      "@/prisma/*": ["./prisma/*"]
-    }
+    "experimentalDecorators": true
   },
   "include": ["src/**/*", "config"],
   "exclude": ["node_modules", "dist"]

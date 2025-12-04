@@ -1,5 +1,5 @@
-import { Recipe, RecipeIngredient, RecipeStep } from "@/prisma/generated/prisma";
-import { RecipeDto } from "@/api/v1/types/recipeDto";
+import { Recipe, RecipeIngredient, RecipeStep } from "prisma/generated/prisma";
+import { RecipeDto } from "../types/recipeDto";
 
 //This function will map the data to the RecipeDto object the front end will expect returned
 export function formatRecipe(data: Recipe, steps: RecipeStep[], ingredients: RecipeIngredient[]) {
