@@ -1,14 +1,14 @@
 import "reflect-metadata";
 import { Request, Response } from "express";
-import * as RecipeService from "../services/recipeService";
-import { errorResponse, successResponse } from "../models/responseModel";
 import { Controller, Delete, Get, Param, Post, Put, Req, Res, UseBefore } from "routing-controllers";
-import { recipeSchema } from "../validations/recipeValidation";
-import { validateRequest } from "../middleware/validate";
 import { getAuth, requireAuth } from "@clerk/express";
-import * as UserService from "../services/userService";
-import { findOrCreateUser } from "../middleware/findOrCreateUser";
-import { recipeCommentSchema } from "../validations/recipeCommentValidation";
+import * as RecipeService from "@/api/v1/services/recipeService";
+import { errorResponse, successResponse } from "@/api/v1/models/responseModel";
+import { recipeSchema } from "@/api/v1/validations/recipeValidation";
+import { validateRequest } from "@/api/v1/middleware/validate";
+import * as UserService from "@/api/v1/services/userService";
+import { findOrCreateUser } from "@/api/v1/middleware/findOrCreateUser";
+import { recipeCommentSchema } from "@/api/v1/validations/recipeCommentValidation";
 
 @Controller()
 export class RecipeController {
