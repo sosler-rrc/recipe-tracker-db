@@ -37,7 +37,7 @@ export class RecipeController {
   }
 
   @Get("/user-saved-recipes")
-  @UseBefore(findOrCreateUser, requireAuth())
+  @UseBefore(requireAuth(), findOrCreateUser)
   async getAllUserSavedRecipes(@Req() req: Request, @Res() res: Response) {
     try {
       const auth = getAuth(req);
@@ -54,7 +54,7 @@ export class RecipeController {
   }
 
   @Post("/user-saved-recipes/:id")
-  @UseBefore(findOrCreateUser, requireAuth())
+  @UseBefore(requireAuth(), findOrCreateUser)
   async toggleUserSavedRecipe(@Param("id") id: string, @Req() req: Request, @Res() res: Response) {
     try {
       const auth = getAuth(req);
@@ -72,7 +72,7 @@ export class RecipeController {
   }
 
   @Post("/recipes")
-  @UseBefore(findOrCreateUser, requireAuth(), validateRequest(recipeSchema))
+  @UseBefore(requireAuth(), findOrCreateUser, validateRequest(recipeSchema))
   async createRecipe(@Req() req: Request, @Res() res: Response) {
     try {
       const auth = getAuth(req);
@@ -90,7 +90,7 @@ export class RecipeController {
   }
 
   @Put("/recipes/:id")
-  @UseBefore(findOrCreateUser, requireAuth(), validateRequest(recipeSchema))
+  @UseBefore(requireAuth(), findOrCreateUser, validateRequest(recipeSchema))
   async updateRecipe(@Param("id") id: string, @Req() req: Request, @Res() res: Response) {
     try {
       const auth = getAuth(req);
@@ -108,7 +108,7 @@ export class RecipeController {
   }
 
   @Delete("/recipes/:id")
-  @UseBefore(findOrCreateUser, requireAuth())
+  @UseBefore(requireAuth(), findOrCreateUser)
   async deleteRecipe(@Param("id") id: string, @Req() req: Request, @Res() res: Response) {
     try {
       const auth = getAuth(req);
@@ -126,7 +126,7 @@ export class RecipeController {
   }
 
   @Post("/recipe-comment")
-  @UseBefore(findOrCreateUser, requireAuth(), validateRequest(recipeCommentSchema))
+  @UseBefore(requireAuth(), findOrCreateUser, validateRequest(recipeCommentSchema))
   async createRecipeComment(@Req() req: Request, @Res() res: Response) {
     try {
       const auth = getAuth(req);
@@ -144,7 +144,7 @@ export class RecipeController {
     }
   }
   @Delete("/recipe-comment/:id")
-  @UseBefore(findOrCreateUser, requireAuth())
+  @UseBefore(requireAuth(), findOrCreateUser)
   async deleteRecipeComment(@Param("id") id: string, @Req() req: Request, @Res() res: Response) {
     try {
       const auth = getAuth(req);
