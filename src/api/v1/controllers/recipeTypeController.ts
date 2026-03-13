@@ -15,4 +15,24 @@ export class RecipeTypeController {
       throw error;
     }
   }
+
+  @Get("/recipeTypes/{id}")
+  async getById(@Param("id") id: string, @Req() req: Request, @Res() res: Response) {
+    try {
+      const recipes = await RecipeTypeService.getRecipeTypeById(id);
+      return res.status(200).json(successResponse(recipes, "RecipeTypes successfully deleted"));
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  @Delete("/recipeTypes/{id}")
+  async delete(@Param("id") id: string, @Req() req: Request, @Res() res: Response) {
+    try {
+      const recipes = await RecipeTypeService.deleteRecipeType(id);
+      return res.status(200).json(successResponse(recipes, "RecipeTypes successfully deleted"));
+    } catch (error) {
+      throw error;
+    }
+  }
 }
