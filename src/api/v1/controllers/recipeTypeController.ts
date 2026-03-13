@@ -26,7 +26,7 @@ export class RecipeTypeController {
     }
   }
 
-  @Put("/recipeTypes")
+  @Put("/recipeTypes/{id}")
   async update(@Param("id") id: string, @Req() req: Request, @Res() res: Response) {
     try {
       const recipeType = await RecipeTypeService.updateRecipeType(id, req.body);
