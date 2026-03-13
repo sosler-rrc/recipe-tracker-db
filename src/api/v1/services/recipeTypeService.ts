@@ -5,6 +5,14 @@ export const fetchAllRecipeTypes = async (): Promise<RecipeType[]> => {
   return prisma.recipeType.findMany();
 };
 
+export const fetchRecipeTypeById = async (id: string): Promise<RecipeType | null> => {
+  return prisma.recipeType.findFirst({
+    where: {
+      id,
+    },
+  });
+};
+
 export const createRecipeType = async (data: RecipeType): Promise<RecipeType> => {
   const newRecipeType = await prisma.recipeType.create({
     data: {

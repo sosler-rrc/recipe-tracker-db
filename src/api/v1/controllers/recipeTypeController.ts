@@ -15,4 +15,24 @@ export class RecipeTypeController {
       throw error;
     }
   }
+
+  @Post("/recipeTypes")
+  async create(@Req() req: Request, @Res() res: Response) {
+    try {
+      const recipeType = await RecipeTypeService.createRecipeType(req.body);
+      return res.status(200).json(successResponse(recipeType, "RecipeTypes created successfully"));
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  @Put("/recipeTypes/{id}")
+  async update(@Param("id") id: string, @Req() req: Request, @Res() res: Response) {
+    try {
+      const recipeType = await RecipeTypeService.updateRecipeType(id, req.body);
+      return res.status(200).json(successResponse(recipeType, "RecipeTypes updated successfully"));
+    } catch (error) {
+      throw error;
+    }
+  }
 }
